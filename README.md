@@ -17,7 +17,7 @@ or
 
 Add this to your html:
 ```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/greencoder001/zGET@latest/index.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/greencoder001/queryjs@latest/index.js"></script>
 ```
 
 or
