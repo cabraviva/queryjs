@@ -13,6 +13,7 @@ queryTimes.ms = queryTimes.milisecond
 
 // Create query object:
 var query = {
+  queryFile: document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1].src,
   Promise: window.Promise,
   time: {
     // Times:
@@ -227,7 +228,7 @@ var query = {
     getPos: function (thenDo) {
       if (navigator.geolocation) {
         return navigator.geolocation.getCurrentPosition(thenDo)
-      } else { console.error('[QUERY Locator] Geolocation is not supported!'); return { type: 'error', err: 'Geolocation is not supported' } }
+      } else { console.error('[' + query.queryFile + '] Geolocation is not supported!'); return { type: 'error', err: 'Geolocation is not supported' } }
     }
   },
   goTo: function (page) {
@@ -624,7 +625,7 @@ const $$ = query.sel
 
 // IE Error:
 if (query.browsers.ie) {
-  console.error('[query] query don\'t support Internet Explorer!')
+  console.warn('[' + query.queryFile + '] query doesn\'t completly support Internet Explorer!')
 }
 // set Query to window:
 if (!window.$) {
