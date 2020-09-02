@@ -13,6 +13,27 @@ queryTimes.ms = queryTimes.milisecond
 
 // Create query object:
 var query = {
+  trim: (text, maxChars = 300, suffix = ' [...]') => {
+    // Trim Whitespace:
+    text = text.trim()
+    // If text is too long
+    if ((text.length + suffix.length) >= (maxChars)) {
+      // Trim text:
+
+      let final = ''
+      let i = 0
+      for (const char of text) {
+        if ((i + suffix.length) < (maxChars)) {
+          final += char
+        }
+        i++
+      }
+
+      return final + suffix
+    }
+
+    return text
+  },
   queryFile: document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1].src,
   Promise: window.Promise,
   time: {
