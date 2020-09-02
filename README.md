@@ -8,7 +8,7 @@ A cool Javascript framework to make anything with javascript easier
 
 Add this to your html:
 ```html
-<script type="text/javascript" src="https://greencoder001.github.io/queryjs/index.js"></script>
+<script type="text/javascript" src="https://greencoder001.github.io/queryjs/dist/query.js"></script>
 ```
 
 or
@@ -17,7 +17,7 @@ or
 
 Add this to your html:
 ```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/greencoder001/queryjs@latest/index.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/greencoder001/queryjs@latest/dist/query.js"></script>
 ```
 
 or
@@ -26,5 +26,5 @@ or
 
 Download the latest release, unpack it and add this html:
 ```html
-<script type="text/javascript" src="/your/path/to/query.min.js"></script>
+<script type="text/javascript" src="/your/path/to/dist/query.js"></script>
 ```

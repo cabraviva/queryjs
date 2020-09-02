@@ -1,0 +1,28 @@
+{
+  "name": "queryjs",
+  "version": "1.0.0",
+  "description": "A cool Javascript framework to make anything with javascript easier",
+  "main": "query.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/greencoder001/queryjs.git"
+  },
+  "keywords": [
+    "query.js"
+  ],
+  "author": "Green_Lab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/greencoder001/queryjs/issues"
+  },
+  "homepage": "https://github.com/greencoder001/queryjs#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.11.5",
+    "@babel/core": "^7.11.5",
+    "@babel/preset-env": "^7.11.5"
+  }
+}
