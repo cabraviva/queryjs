@@ -1,3 +1,63 @@
+/* global HTMLElement */
+
+class QueryElement {
+  constructor (selector) {
+    if (selector instanceof HTMLElement) { this.selected = [selector] } else { this.selected = document.querySelectorAll(selector) }
+  }
+
+  on (event, callback) {
+    for (const element of this.selected) {
+      element.addEventListener(event, callback)
+    }
+  }
+
+  outer (html = null) {
+    if (html !== null) {
+      for (const element of this.selected) {
+        element.outerHTML = html
+      }
+    }
+    return (this.selected[0] || { outerHTML: null }).outerHTML
+  }
+
+  inner (html = null) {
+    if (html !== null) {
+      for (const element of this.selected) {
+        element.innerHTML = html
+      }
+    }
+    return (this.selected[0] || { innerHTML: null }).innerHTML
+  }
+
+  text (txt = null) {
+    if (txt !== null) {
+      for (const element of this.selected) {
+        element.innerText = txt
+      }
+    }
+    return (this.selected[0] || { innerText: null }).innerText
+  }
+
+  any (key, value) {
+    for (const element of this.selected) {
+      const keys = key.split('.')
+      let realKey = element
+      for (const key of keys) {
+        realKey = realKey[key]
+      }
+      realKey = value
+
+      return true
+    }
+  }
+
+  each (cb) {
+    for (const element of this.selected) {
+      cb(new QueryElement(element))
+    }
+  }
+}
+
 // Times:
 var queryTimes = {
   milisecond: 1
@@ -143,6 +203,7 @@ var query = {
       this.audio.muted = false
     }
   },
+  isElectron: function isELectron () { try { return !!((((process || { versions: undefined }).versions || { electron: false }).electron) || false) || navigator.userAgent.includes('Electron') } catch { return false } },
   loadStyle: function loadCSSStyles (css) {
     document.head.innerHTML += '<style type="text/css">' + css + '</style>'
   },
@@ -340,197 +401,11 @@ var query = {
     opera: null,
     firefox: null,
     brave: null,
-    blink: null
+    blink: null,
+    electron: null
   }, */
   sel: function selectDOMElement (selector) {
-    if (selector === document) {
-      return function onReady (thenDo) { window.addEventListener('DOMContentLoaded', thenDo) }
-    }
-    var selected = document.querySelectorAll(selector)
-
-    if (selected.length > 1) {
-      selected.any = function (key, value) {
-        const keys = key.split('.')
-        if (keys.length === 1) {
-          for (const element of this) {
-            element[keys[0]] = value
-          }
-        } else if (keys.length === 2) {
-          for (const element of this) {
-            element[keys[0]][keys[1]] = value
-          }
-        } else if (keys.length === 3) {
-          for (const element of this) {
-            element[keys[0]][keys[1]][keys[2]] = value
-          }
-        } else if (keys.length === 4) {
-          for (const element of this) {
-            element[keys[0]][keys[1]][keys[2]][keys[3]] = value
-          }
-        }
-
-        return true
-      }
-
-      selected.on = function addEventListener (e, t) {
-        for (var element of this) {
-          element.addEventListener(e, t)
-        }
-      }
-
-      selected.removeClass = function (DOMclass) {
-        for (var element of this) {
-          element.classList.remove(DOMclass)
-        }
-      }
-
-      selected.addClass = function (DOMclass) {
-        for (var element of this) {
-          element.classList.add(DOMclass)
-        }
-      }
-
-      selected.toggleClass = function (DOMclass) {
-        for (var element of this) {
-          element.classList.toggle(DOMclass)
-        }
-      }
-
-      // Toggle visibility:
-      selected.hide = function () {
-        for (const element of this) {
-          element.style.visibility = 'hidden'
-        }
-      }
-
-      selected.show = function () {
-        for (const element of this) {
-          element.style.visibility = 'visible'
-        }
-      }
-
-      selected.toggleVisibility = function () {
-        const vis = this[0].style.visibility === 'visible'
-        for (const element of this) {
-          if (vis) { element.style.visibility = 'hidden' } else { element.style.visibility = 'visible' }
-        }
-      }
-
-      // Remove Element:
-      selected.delete = function () {
-        for (const element of this) {
-          element.outerHTML = ''
-        }
-      }
-
-      // Blur:
-      selected.blur = function (radius) {
-        if (typeof radius === 'number') {
-          for (const element of this) {
-            element.style.filter = `blur(${radius}px)`
-          }
-        } else {
-          for (const element of this) {
-            element.style.filter = `blur(${radius})`
-          }
-        }
-      }
-
-      selected.unblur = function () {
-        for (const element of this) {
-          element.style.filter = null
-        }
-      }
-
-      // inner:
-      selected.inner = function (html) {
-        if (!query.exist(html)) {
-          return this[0].innerHTML
-        }
-        for (const element of this) {
-          element.innerHTML = html
-        }
-      }
-
-      // outer:
-      selected.outer = function (html) {
-        if (!query.exist(html)) {
-          return this[0].outerHTML
-        }
-        for (const element of this) {
-          element.outerHTML = html
-        }
-      }
-
-      // SET THE SELECTOR:
-      selected.selector = selector
-
-      return selected
-    } else {
-      var s = selected[0]
-
-      s.on = function (e, t) {
-        this.addEventListener(e, t)
-      }
-
-      s.removeClass = function (DOMclass) {
-        this.classList.remove(DOMclass)
-      }
-
-      s.addClass = function (DOMclass) {
-        this.classList.add(DOMclass)
-      }
-
-      s.toggleClass = function (DOMclass) {
-        this.classList.toggle(DOMclass)
-      }
-
-      // Toggle visibility:
-      s.hide = function () {
-        this.style.visibility = 'hidden'
-      }
-
-      s.show = function () {
-        this.style.visibility = 'visible'
-      }
-
-      s.toggleVisibility = function () {
-        const vis = this[0].style.visibility === 'visible'
-        if (vis) { this.style.visibility = 'hidden' } else { this.style.visibility = 'visible' }
-      }
-
-      // Remove Element:
-      s.delete = function () {
-        this.outerHTML = ''
-      }
-
-      // Blur:
-      s.blur = function (radius) {
-        if (typeof radius === 'number') {
-          this.style.filter = `blur(${radius}px)`
-        } else {
-          this.style.filter = `blur(${radius})`
-        }
-      }
-
-      selected.unblur = function () {
-        this.style.filter = null
-      }
-
-      //  inner:
-      selected.inner = function (html) {
-        this.innerHTML = html
-      }
-
-      // outer:
-      selected.outer = function (html) {
-        this.outerHTML = html
-      }
-
-      s.selector = selector
-
-      return s
-    }
+    return new QueryElement(selector)
   }
 }
 
@@ -543,6 +418,7 @@ query.browsers.opera = (!!window.opr && !!window.opr.addons) || !!window.opera |
 query.browsers.firefox = typeof InstallTrigger !== 'undefined'
 query.browsers.blink = (query.browsers.chromium || query.browsers.opera) && !!window.CSS
 query.browsers.brave = query.exist(navigator.brave)
+query.browsers.electron = query.isElectron()
 
 // It is ie10 or lower?
 query.browsers.ieLower = (navigator.appName === 'Microsoft Internet Explorer')
@@ -592,7 +468,9 @@ if (query.browsers.safari || query.browsers.chrome || query.browsers.chromium) {
 } else { /* Non webkit browser: */ query.browsers.webkit = false }
 
 // Set the browser property to the browser:
-if (query.browsers.safari) {
+if (query.browsers.electron) {
+  query.browser = 'electron'
+} else if (query.browsers.safari) {
   query.browser = 'safari'
 } else if (query.browsers.opera) {
   query.browser = 'opera'

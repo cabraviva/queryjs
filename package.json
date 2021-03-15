@@ -25,5 +25,8 @@
     "@babel/core": "^7.11.5",
     "@babel/preset-env": "^7.11.5",
     "uglify-js": "^3.10.3"
+  },
+  "dependencies": {
+    "caniuse-lite": "^1.0.30001200"
   }
 }
