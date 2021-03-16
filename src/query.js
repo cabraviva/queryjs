@@ -2,7 +2,8 @@
 
 class QueryElement {
   constructor (selector) {
-    if (selector instanceof HTMLElement) { this.selected = [selector] } else { this.selected = document.querySelectorAll(selector) }
+    if (selector === document) { return (eventHandler) => { window.addEventListener('DOMContentLoaded', eventHandler) } }
+    if (selector instanceof HTMLElement) { this.selected = [selector] } else { try { this.selected = document.querySelectorAll(selector) } catch { return null } }
   }
 
   on (event, callback) {
@@ -39,21 +40,106 @@ class QueryElement {
   }
 
   any (key, value) {
-    for (const element of this.selected) {
-      const keys = key.split('.')
-      let realKey = element
-      for (const key of keys) {
-        realKey = realKey[key]
-      }
-      realKey = value
-
-      return true
-    }
+    const keys = key.split('.')
+    if (keys.length === 0) return false
+    if (keys.length === 1) this.each((elem) => { elem.selected[0][keys[0]] = value })
+    if (keys.length === 2) this.each((elem) => { elem.selected[0][keys[0]][keys[1]] = value })
+    if (keys.length === 3) this.each((elem) => { elem.selected[0][keys[0]][keys[1]][keys[2]] = value })
+    if (keys.length === 4) this.each((elem) => { elem.selected[0][keys[0]][keys[1]][keys[2]][keys[3]] = value })
+    if (keys.length === 5) this.each((elem) => { elem.selected[0][keys[0]][keys[1]][keys[2]][keys[3]][keys[4]] = value })
   }
 
   each (cb) {
     for (const element of this.selected) {
       cb(new QueryElement(element))
+    }
+  }
+
+  removeClass (DOMclass) {
+    for (var element of this.selected) {
+      element.classList.remove(DOMclass)
+    }
+  }
+
+  addClass (DOMclass) {
+    for (var element of this.selected) {
+      element.classList.add(DOMclass)
+    }
+  }
+
+  toggleClass (DOMclass) {
+    for (var element of this.selected) {
+      element.classList.toggle(DOMclass)
+    }
+  }
+
+  get (index) {
+    return new QueryElement(this.selected[index])
+  }
+
+  hasClass (DOMclass) {
+    let hasTheClass = false
+    for (const element of this.selected) {
+      for (const _class of element.classList) {
+        if (_class === DOMclass) hasTheClass = true
+      }
+    }
+    return hasTheClass
+  }
+
+  // Toggle visibility:
+  hide () {
+    for (const element of this.selected) {
+      element.style.visibility = 'hidden'
+    }
+  }
+
+  show () {
+    for (const element of this.selected) {
+      element.style.visibility = 'visible'
+    }
+  }
+
+  toggleVisibility () {
+    const vis = this.selected[0].style.visibility === 'visible'
+    for (const element of this.selected) {
+      if (vis) { element.style.visibility = 'hidden' } else { element.style.visibility = 'visible' }
+    }
+  }
+
+  isVisible () {
+    return !(this.selected[0].style.visibility === 'hidden')
+  }
+
+  // Remove Element:
+  delete () {
+    for (const element of this.selected) {
+      element.outerHTML = ''
+    }
+  }
+
+  // Blur:
+  blur (radius) {
+    if (typeof radius === 'number') {
+      for (const element of this.selected) {
+        element.style.filter = `blur(${radius}px)`
+      }
+    } else {
+      for (const element of this.selected) {
+        element.style.filter = `blur(${radius})`
+      }
+    }
+  }
+
+  unblur () {
+    for (const element of this.selected) {
+      element.style.filter = null
+    }
+  }
+
+  append (something) {
+    for (const element of this.selected) {
+      element.append(something)
     }
   }
 }
@@ -208,6 +294,8 @@ var query = {
     document.head.innerHTML += '<style type="text/css">' + css + '</style>'
   },
   makeDraggable: function createADraggableDiv (element, dragZone, ondrag = function () {}, ondragstart = function () {}, ondragclose = function () {}, options) {
+    element = document.querySelector(element)
+    dragZone = document.querySelector(dragZone)
     const opts = options || { scroll: false }
     element.style.position = opts.scroll || false ? 'fixed' : 'absolute'
     var pos1 = 0
@@ -531,5 +619,28 @@ if (!window.$) {
   window.$ = $
   window.$$ = $$
 }
+
+const execute = (obj = { in: 0, repeat: 1, conditions: [true] }, func) => {
+  setTimeout(() => {
+    for (var i = 0; i < ((obj.repeat) || 1); i++) {
+      let isTrue = true;
+      (obj.conditions || [true]).forEach((condition) => {
+        if (!condition) isTrue = false
+      })
+
+      if (isTrue) {
+        (func || (() => { console.log('Test passed') }))()
+      }
+    }
+  }, (obj.in || 0))
+}
+
+const catchlib = (func) => {
+  try { func() } catch { return false }
+  return true
+}
+
 window.query = query
 window.queryjs = query
+window.execute = execute
+window.catchlib = catchlib
