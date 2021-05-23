@@ -111,6 +111,30 @@ class QueryElement {
     return !(this.selected[0].style.visibility === 'hidden')
   }
 
+  // Display
+  nodisplay () {
+    for (const element of this.selected) {
+      element.style.display = 'none'
+    }
+  }
+
+  display (mode = 'block') {
+    for (const element of this.selected) {
+      element.style.display = mode
+    }
+  }
+
+  toggleDisplay (mode = 'block') {
+    const vis = this.selected[0].style.display !== 'none'
+    for (const element of this.selected) {
+      if (vis) { element.style.display = 'none' } else { element.style.display = mode }
+    }
+  }
+
+  isDisplayed () {
+    return !(this.selected[0].style.display === 'none')
+  }
+
   // Remove Element:
   delete () {
     for (const element of this.selected) {
