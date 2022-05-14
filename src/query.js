@@ -6,6 +6,47 @@ class QueryElement {
     if (selector instanceof HTMLElement) { this.selected = [selector] } else { try { this.selected = document.querySelectorAll(selector) } catch { return null } }
   }
 
+  // Getters & Setters:
+  get value () {
+    return this.selected[0].value
+  }
+
+  set value(value) {
+    for (const element of this.selected) {
+      element.value = value
+    }
+  }
+
+  get checked () {
+    return this.selected[0].checked
+  }
+
+  set checked(value) {
+    for (const element of this.selected) {
+      element.checked = value
+    }
+  }
+
+  get innerHTML () {
+    return this.inner()
+  }
+
+  set innerHTML (html) {
+    this.inner(html)
+  }
+
+  get innerText () {
+    return this.text()
+  }
+
+  set innerText (txt) {
+    for (const element of this.selected) {
+      element.innerText = txt
+    }
+  }
+
+  // Functions
+
   on (event, callback) {
     for (const element of this.selected) {
       element.addEventListener(event, callback)
@@ -75,6 +116,10 @@ class QueryElement {
 
   get (index) {
     return new QueryElement(this.selected[index])
+  }
+
+  raw (index = 0) {
+    return this.selected[index]
   }
 
   hasClass (DOMclass) {
@@ -594,8 +639,6 @@ if (query.browsers.electron) {
   query.browser = 'firefox'
 } else if (query.browsers.ie) {
   query.browser = 'internet-explorer'
-} else if (query.browsers.opera) {
-  query.browser = 'chromium'
 } else if (query.browsers.chrome) {
   query.browser = 'chrome'
 } else {
