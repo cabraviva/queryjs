@@ -11,7 +11,7 @@ class QueryElement {
     return this.selected[0].value
   }
 
-  set value(value) {
+  set value (value) {
     for (const element of this.selected) {
       element.value = value
     }
@@ -21,7 +21,7 @@ class QueryElement {
     return this.selected[0].checked
   }
 
-  set checked(value) {
+  set checked (value) {
     for (const element of this.selected) {
       element.checked = value
     }
@@ -35,6 +35,14 @@ class QueryElement {
     this.inner(html)
   }
 
+  get outerHTML () {
+    return this.outer()
+  }
+
+  set outerHTML (html) {
+    this.outer(html)
+  }
+
   get innerText () {
     return this.text()
   }
@@ -45,11 +53,16 @@ class QueryElement {
     }
   }
 
-  // Functions
-
+  // Functions:
   on (event, callback) {
     for (const element of this.selected) {
       element.addEventListener(event, callback)
+    }
+  }
+
+  click () {
+    for (const element of this.selected) {
+      element.click()
     }
   }
 
@@ -97,19 +110,19 @@ class QueryElement {
   }
 
   removeClass (DOMclass) {
-    for (var element of this.selected) {
+    for (const element of this.selected) {
       element.classList.remove(DOMclass)
     }
   }
 
   addClass (DOMclass) {
-    for (var element of this.selected) {
+    for (const element of this.selected) {
       element.classList.add(DOMclass)
     }
   }
 
   toggleClass (DOMclass) {
-    for (var element of this.selected) {
+    for (const element of this.selected) {
       element.classList.toggle(DOMclass)
     }
   }
@@ -214,7 +227,7 @@ class QueryElement {
 }
 
 // Times:
-var queryTimes = {
+const queryTimes = {
   milisecond: 1
 }
 
@@ -228,6 +241,78 @@ queryTimes.ms = queryTimes.milisecond
 
 // Create query object:
 var query = {
+  async createCredentials (options) {
+    // In case I forget how to use this, here's an example
+    /*
+
+    IMPORTANT: Always use await
+    A questionmark means optional
+
+    options = {
+      domain: 'example.com',
+      domainName?: 'Example Domain',
+      userName: 'greencoder001',
+      displayedUserName: 'Green_Lab',
+      randomString: 'SHOULD_BE_SOME_CRYPTOGRAPHIC_STRING_GENERATED_BY_THE_SERVER',
+      userId: 'JUST_A_SIMPLE_USER_ID_LIKE_MAYBE_A_UUID',
+      timeout?: 60000,
+      crossPlatform?: true // If set to true, you'll need smt. like a YubiKey
+    }
+
+    await $.createCredentials({
+      domain: 'localhost',
+      userName: 'greencoder001',
+      displayedUserName: 'Green_Lab',
+      randomString: 'SHOULD_BE_SOME_CRYPTOGRAPHIC_STRING_GENERATED_BY_THE_SERVER',
+      userId: 'JUST_A_SIMPLE_USER_ID_LIKE_MAYBE_A_UUID'
+    })
+
+    */
+
+    let { domain, domainName, userName, displayedUserName, userId, randomString, timeout } = options
+    if (typeof randomString !== 'string') throw new Error('randomString must be a string')
+    if (typeof domain !== 'string') throw new Error('domain must be a string')
+    if (typeof userName !== 'string') throw new Error('userName must be a string')
+    if (typeof displayedUserName !== 'string') throw new Error('displayedUserName must be a string')
+    if (typeof userId !== 'string') throw new Error('userId must be a string')
+
+    if (typeof timeout !== 'number') timeout = 60000
+    if (Number.isNaN(timeout)) timeout = 60000
+    if (timeout < 10000) timeout = 10000
+
+    if (typeof options.crossPlatform !== 'boolean') options.crossPlatform = false
+    if (!domainName) domainName = domain
+
+    const publicKeyCredentialCreationOptions = {
+      challenge: Uint8Array.from(randomString, c => c.charCodeAt(0)),
+      rp: {
+        name: domainName,
+        id: domain
+      },
+      user: {
+        id: Uint8Array.from(userId, c => c.charCodeAt(0)),
+        name: userName,
+        displayName: displayedUserName
+      },
+      pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+      timeout,
+      attestation: 'direct',
+      authenticatorSelection: {
+
+      }
+    }
+
+    if (options.crossPlatform === true) {
+      publicKeyCredentialCreationOptions.authenticatorSelection.authenticatorAttachment = 'cross-platform'
+    }
+
+    const credential = await navigator.credentials.create({
+      publicKey: publicKeyCredentialCreationOptions,
+      userVerification: 'discouraged'
+    })
+
+    return credential
+  },
   trim: (text, maxChars = 300, suffix = ' [...]') => {
     // Trim Whitespace:
     text = text.trim()
@@ -367,10 +452,10 @@ var query = {
     dragZone = document.querySelector(dragZone)
     const opts = options || { scroll: false }
     element.style.position = opts.scroll || false ? 'fixed' : 'absolute'
-    var pos1 = 0
-    var pos2 = 0
-    var pos3 = 0
-    var pos4 = 0
+    let pos1 = 0
+    let pos2 = 0
+    let pos3 = 0
+    let pos4 = 0
     if (dragZone) {
       // if present, the header is where you move the DIV from:
       dragZone.onmousedown = dragMouseDown
@@ -689,7 +774,7 @@ if (!window.$) {
 
 const execute = (obj = { in: 0, repeat: 1, conditions: [true] }, func) => {
   setTimeout(() => {
-    for (var i = 0; i < ((obj.repeat) || 1); i++) {
+    for (let i = 0; i < ((obj.repeat) || 1); i++) {
       let isTrue = true;
       (obj.conditions || [true]).forEach((condition) => {
         if (!condition) isTrue = false
