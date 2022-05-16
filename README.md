@@ -1,3 +1,5 @@
+[![](https://data.jsdelivr.com/v1/package/gh/greencoder001/queryjs/badge)](https://www.jsdelivr.com/package/gh/greencoder001/queryjs)
+
 # query.js
 A cool Javascript framework to make anything with javascript easier
 
